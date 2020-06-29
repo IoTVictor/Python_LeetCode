@@ -3,27 +3,26 @@ class Solution(object):
         # k = any integer
         n = len(prices)
 
-        if k > n/2:
+        if k > n/2:  # 相当于不限次数买，即k = +inf
             return self.maxProfit_k_inf(prices)
 
-        dp = [[[0]*2 for _ in range(k+1)] for _ in range(n)]
+        dp = [[[0]*2 for _ in range(k+1)] for _ in range(n)]  # n * k+1 * 2
         for i in range(n):
             for j in range(k, 0, -1):  # 逆序
-                if i - 1 == -1:
+                if i - 1 == -1:  # badcase
                     dp[0][j][0] = 0
                     dp[0][j][1] = -prices[0]
                     continue
-                # 昨天没有股票，昨天有股票今天卖出
+                # 昨天没有股票 or 昨天有股票今天卖出
                 dp[i][j][0] = max(dp[i - 1][j][0], dp[i - 1][j][1] + prices[i])
-                # 昨天有股票，昨天没有股票今天买入，这里把买入当作一次交易，所以是 j-1
-                # 如果把 j-1 写在上一行代码即把卖出当作一次交易，运行结果不是正确答案，不知道是为什么
+                # 昨天有股票 or 昨天没有股票今天买入(买入当作一次交易，是 j-1)
                 dp[i][j][1] = max(dp[i - 1][j][1], dp[i - 1][j - 1][0] - prices[i])
 
         return dp[n - 1][k][0]
 
-    # 不限k的次数
+    # 不限k的次数,即题目2（k = +inf）
     def maxProfit_k_inf(self, prices):
-        # k = +infinity
+        # k = +infinity，不需要记录 k 这个状态
         # dp[i][0] = max(dp[i-1][0], dp[i-1][1] + prices[i])
         # dp[i][1] = max(dp[i-1][1], dp[i-1][0] - prices[i])
         n = len(prices)
